@@ -124,23 +124,22 @@ LABEL description="nginx and php7 based on alpine" \
 
 COPY rootfs /
 
-RUN export BUILD_DEPS="build-base \                    
-                    wget \
-                    gnupg \
-                    autoconf \
-                    libressl-dev \
-                    g++ \
-                    pcre-dev \
-                    curl-dev \
-                    libedit-dev \
-                    gcc \
-                    zlib-dev \
-                    make \
-                    pkgconf \
-                    wget \
-                    ca-certificates \
-                    libxml2-dev \
-                    ${CUSTOM_BUILD_PKGS}" \
+RUN export BUILD_DEPS="linux-headers \
+			    libtool \
+			    build-base \
+			    pcre-dev \
+			    zlib-dev \
+			    wget \
+			    gnupg \
+			    autoconf \
+			    gcc \
+			    g++ \
+			    libc-dev \
+			    make \
+			    pkgconf \
+			    curl-dev \
+			    ca-certificates \
+			    ${CUSTOM_BUILD_PKGS}" \
     && NB_CORES=${BUILD_CORES-$(grep -c "processor" /proc/cpuinfo)} \
     && apk add -U ${BUILD_DEPS} \
                     curl \
@@ -148,7 +147,7 @@ RUN export BUILD_DEPS="build-base \
                     libxml2 \
                     libressl \
                     pcre \
-		            zlib \
+		    zlib \
                     s6 \
                     su-exec \
                     ${CUSTOM_PKGS} \
