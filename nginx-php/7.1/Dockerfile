@@ -166,6 +166,11 @@ RUN wget http://nginx.org/download/nginx-${NGINX_VER}.tar.gz -O /tmp/nginx-${NGI
  && tar xzf /tmp/nginx-${NGINX_VER}.tar.gz -C /usr/src \
  && tar xzvf /tmp/php-${PHP_VER}.tar.gz -C /usr/src \
  && tar xzf /tmp/libiconv-${LIBICONV_VERSION}.tar.gz -C /usr/src 
+ 
+ ### GNU Libiconv installation
+RUN cd /usr/src/libiconv-${LIBICONV_VERSION} \
+ && ./configure --prefix=/usr/local \
+ && make && make install && libtool --finish /usr/local/lib 
 
 ### nginx installation
 RUN cd /usr/src/nginx-${NGINX_VER} \
@@ -173,11 +178,6 @@ RUN cd /usr/src/nginx-${NGINX_VER} \
  && make -j ${NB_CORES} \
  && make install 
  
-### GNU Libiconv installation
-RUN cd /usr/src/libiconv-${LIBICONV_VERSION} \
- && ./configure --prefix=/usr/local \
- && make && make install && libtool --finish /usr/local/lib 
-
 ### PHP installation
 RUN mv /usr/src/php-${PHP_VER} /usr/src/php \
  && cd /usr/src/php \
@@ -186,8 +186,8 @@ RUN mv /usr/src/php-${PHP_VER} /usr/src/php \
  && make install 
 
 ### Strip, clean, install modules
-RUN { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
- && make clean \
+RUN make clean \
+ && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
  && chmod u+x /usr/local/bin/* /etc/s6.d/*/* \
  && docker-php-ext-install ${PHP_EXT_LIST} \
  && apk del ${BUILD_DEPS} \
